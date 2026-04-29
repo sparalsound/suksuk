@@ -2,109 +2,108 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>응숙이의 먹거리 돌림판</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px 0;
+            font-family: sans-serif;
+            color: white;
+        }
+
+        /* 캡처될 영역 */
+        #capture-area {
             background: radial-gradient(circle, #1a1a1a, #000);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        /* 캡처 영역 지정 */
-        #capture-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            background: transparent;
+            padding: 30px 10px;
+            width: 100%;
         }
 
         h1 {
-            font-size: 3.5rem;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #ffd700, #ff8c00, #ff4500, #ffd700);
-            background-size: 200% auto;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, #ffd700, #ff4500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            margin-bottom: 20px;
         }
-
-        @keyframes shine { to { background-position: 200% center; } }
 
         .roulette-container {
             position: relative;
-            width: 450px;
-            height: 450px;
-            border: 10px solid #333;
+            width: 300px;
+            height: 300px;
+            border: 5px solid #333;
             border-radius: 50%;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
         }
 
         .pin {
             position: absolute;
-            top: -30px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #ff4500;
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff4500;
             z-index: 10;
         }
 
         canvas {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
         }
 
-        .controls {
-            margin-top: 30px;
+        #result {
+            margin-top: 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            min-height: 1.5em;
+        }
+
+        /* 버튼 영역 */
+        .btn-group {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            margin: 20px 0;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 25px;
+            font-size: 1rem;
             font-weight: bold;
-            color: white;
             border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
+            border-radius: 25px;
+            color: white;
         }
 
-        #spin-btn {
-            background: linear-gradient(135deg, #ff4500, #ff8c00);
-            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+        #spin-btn { background: #ff4500; }
+        #capture-btn { background: #4facfe; }
+
+        /* 생성된 이미지 결과창 */
+        #image-output {
+            margin-top: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            border-top: 1px dashed #555;
+            padding-top: 20px;
         }
 
-        /* 캡처 버튼 스타일 (화려한 보라색/블루 계열) */
-        #capture-btn {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
-        }
-
-        button:hover { transform: scale(1.05); opacity: 0.9; }
-        button:disabled { background: #555; cursor: not-allowed; transform: scale(1); }
-
-        #result {
-            margin-top: 25px;
-            font-size: 2.2rem;
-            font-weight: 800;
-            height: 1.5em;
-            text-align: center;
+        #image-output img {
+            width: 80%;
+            border: 2px solid #ffd700;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -112,17 +111,21 @@
 
     <div id="capture-area">
         <h1>✨ 응숙이의 먹거리 돌림판 ✨</h1>
-
         <div class="roulette-container">
             <div class="pin"></div>
-            <canvas id="canvas" width="450" height="450"></canvas>
+            <canvas id="canvas" width="300" height="300"></canvas>
         </div>
-
-        <div id="result">행운을 결정하세요!</div>
+        <div id="result">오늘 뭐 먹지?</div>
     </div>
-    <div class="controls">
-        <button id="spin-btn">운명의 돌리기!</button>
-        <button id="capture-btn">결과 화면 캡처 📸</button>
+
+    <div class="btn-group">
+        <button id="spin-btn">돌리기!</button>
+        <button id="capture-btn">결과 이미지 만들기</button>
+    </div>
+
+    <div id="image-output">
+        <p>👇 이미지를 길게 눌러서 저장하세요!</p>
+        <div id="img-container"></div>
     </div>
 
     <script>
@@ -131,75 +134,64 @@
         const spinBtn = document.getElementById('spin-btn');
         const captureBtn = document.getElementById('capture-btn');
         const resultDiv = document.getElementById('result');
+        const outputDiv = document.getElementById('image-output');
+        const imgContainer = document.getElementById('img-container');
 
-        const menus = [];
-        for(let i = 0; i < 12; i++) {
-            menus.push(i % 2 === 0 ? "영동족발" : "작공짜떡");
-        }
-
+        const menus = ["영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡"];
         const colors = ["#8B0000", "#D4AF37", "#1a1a1a", "#B8860B", "#333333", "#A52A2A"];
-        const numSlices = menus.length;
-        const arc = (Math.PI * 2) / numSlices;
         let currentRotation = 0;
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const arc = (Math.PI * 2) / 12;
             menus.forEach((text, i) => {
-                const angle = i * arc;
                 ctx.beginPath();
                 ctx.fillStyle = colors[i % colors.length];
-                ctx.moveTo(225, 225);
-                ctx.arc(225, 225, 225, angle, angle + arc);
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 150, i * arc, (i + 1) * arc);
                 ctx.fill();
-
                 ctx.save();
-                ctx.translate(225, 225);
-                ctx.rotate(angle + arc / 2);
+                ctx.translate(150, 150);
+                ctx.rotate(i * arc + arc / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "white";
-                ctx.font = "bold 20px sans-serif";
-                ctx.fillText(text, 210, 10);
+                ctx.font = "bold 14px sans-serif";
+                ctx.fillText(text, 140, 5);
                 ctx.restore();
             });
         }
 
         function spin() {
             spinBtn.disabled = true;
-            resultDiv.innerText = "두구두구두구...";
-            
-            const randomRotate = Math.floor(Math.random() * 360) + 2880; 
-            currentRotation += randomRotate;
-            
+            outputDiv.style.display = 'none'; // 새 회전 시 이전 이미지 숨김
+            const rotate = Math.floor(Math.random() * 360) + 2160;
+            currentRotation += rotate;
             canvas.style.transform = `rotate(${currentRotation}deg)`;
-
+            
             setTimeout(() => {
                 spinBtn.disabled = false;
-                const actualDegree = currentRotation % 360;
-                const index = Math.floor((360 - actualDegree + 270) % 360 / (360 / numSlices));
-                const winner = menus[index];
-                resultDiv.innerHTML = `🎉 당첨! <span style="color:#ffd700">[${winner}]</span> 축하합니다! 🎉`;
+                const index = Math.floor((360 - (currentRotation % 360) + 270) % 360 / 30);
+                resultDiv.innerHTML = `🎉 당첨: ${menus[index]}! 🎉`;
             }, 4000);
         }
 
-        // 캡처 기능 구현
-        function captureResult() {
-            const area = document.getElementById('capture-area');
-            
-            // 캡처 시 배경이 검게 나오는 것을 방지하기 위해 스타일 임시 조정
-            html2canvas(area, {
-                backgroundColor: "#000000", // 캡처 이미지 배경색
-                scale: 2 // 고화질 설정
+        // 이미지 생성 버튼 로직
+        function makeImage() {
+            html2canvas(document.getElementById('capture-area'), {
+                backgroundColor: "#000"
             }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = '응숙이_당첨결과.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                const img = new Image();
+                img.src = canvas.toDataURL("image/png");
+                imgContainer.innerHTML = '';
+                imgContainer.appendChild(img);
+                outputDiv.style.display = 'flex';
+                // 화면 아래로 스크롤
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             });
         }
 
         draw();
         spinBtn.addEventListener('click', spin);
-        captureBtn.addEventListener('click', captureResult);
+        captureBtn.addEventListener('click', makeImage);
     </script>
 </body>
 </html>
