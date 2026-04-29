@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>응숙이의 먹거리 돌림판</title>
+    <style>
+        /* 화려한 배경 및 폰트 설정 */
+        body {
+            background: radial-gradient(circle, #1a1a1a, #000);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* 화려한 제목 스타일 */
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ffd700, #ff8c00, #ff4500, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* 돌림판 컨테이너 */
+        .roulette-container {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            border: 10px solid #333;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+        }
+
+        /* 화살표(핀) */
+        .pin {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff4500;
+            z-index: 10;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+        }
+
+        canvas {
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        /* 하단 컨트롤러 */
+        .controls {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        #spin-btn {
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        #spin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.6);
+        }
+
+        #spin-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 2rem;
+            font-weight: 800;
+            height: 1.5em;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ 응숙이의 먹거리 돌림판 ✨</h1>
+
+    <div class="roulette-container">
+        <div class="pin"></div>
+        <canvas id="canvas" width="450" height="450"></canvas>
+    </div>
+
+    <div class="controls">
+        <button id="spin-btn">운명의 돌리기!</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spin-btn');
+        const resultDiv = document.getElementById('result');
+
+        // 12개 메뉴 교차 설정 (영동족발, 작공짜떡)
+        const menus = [];
+        for(let i = 0; i < 12; i++) {
+            menus.push(i % 2 === 0 ? "영동족발" : "작공짜떡");
+        }
+
+        // 색상 조합 (화려한 골드 & 레드 계열)
+        const colors = ["#8B0000", "#D4AF37", "#4B0082", "#B8860B", "#2F4F4F", "#A52A2A"];
+        const numSlices = menus.length;
+        const arc = (Math.PI * 2) / numSlices;
+        let currentRotation = 0;
+
+        // 돌림판 디자인 그리기
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            menus.forEach((text, i) => {
+                const angle = i * arc;
+                
+                // 조각 배경
+                ctx.beginPath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.moveTo(225, 225);
+                ctx.arc(225, 225, 225, angle, angle + arc);
+                ctx.fill();
+                ctx.stroke();
+
+                // 텍스트 추가
+                ctx.save();
+                ctx.translate(225, 225);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "white";
+                ctx.font = "bold 18px sans-serif";
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = "black";
+                ctx.fillText(text, 210, 10);
+                ctx.restore();
+            });
+        }
+
+        function spin() {
+            spinBtn.disabled = true;
+            resultDiv.innerText = "두구두구두구...";
+            
+            const randomRotate = Math.floor(Math.random() * 360) + 2160; // 최소 6바퀴
+            currentRotation += randomRotate;
+            
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+            // 애니메이션이 끝난 후 결과 도출 (4초 후)
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                
+                // 현재 각도에서 당첨 항목 계산
+                const actualDegree = currentRotation % 360;
+                // 핀이 12시 방향(-90도)에 있으므로 보정 계산
+                const index = Math.floor((360 - actualDegree + 270) % 360 / (360 / numSlices));
+                const winner = menus[index];
+
+                resultDiv.innerHTML = `🎉 당첨! 오늘의 메뉴는 <span style="color:#ffd700">[${winner}]</span> 입니다! 🎉`;
+                
+                // 축하 효과 (간단한 콘솔 메시지나 시각 효과를 추가할 수 있음)
+            }, 4000);
+        }
+
+        draw();
+        spinBtn.addEventListener('click', spin);
+    </script>
+</body>
+</html>
