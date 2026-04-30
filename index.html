@@ -3,195 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>응숙이의 먹거리 돌림판</title>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <title>응숙이의 운명 결정기</title>
     <style>
         body {
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px 0;
-            font-family: sans-serif;
+            background: #0b0e14;
             color: white;
-        }
-
-        /* 캡처될 영역 */
-        #capture-area {
-            background: radial-gradient(circle, #1a1a1a, #000);
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 10px;
-            width: 100%;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Apple SD Gothic Neo', sans-serif;
+            overflow: hidden;
         }
 
         h1 {
             font-size: 1.8rem;
-            background: linear-gradient(to right, #ffd700, #ff4500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .roulette-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            border: 5px solid #333;
-            border-radius: 50%;
-        }
-
-        .pin {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #ff4500;
-            z-index: 10;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-
-        #result {
-            margin-top: 20px;
-            font-size: 1.4rem;
-            font-weight: bold;
             color: #ffd700;
-            text-align: center;
-            min-height: 1.5em;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-bottom: 30px;
         }
 
-        /* 버튼 영역 */
-        .btn-group {
+        .slot-machine {
+            background: linear-gradient(145deg, #2c3e50, #000);
+            width: 80vw;
+            max-width: 320px;
+            height: 180px;
+            border: 8px solid #d4af37;
+            border-radius: 20px;
+            position: relative;
             display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 25px;
-            color: white;
-        }
-
-        #spin-btn { background: #ff4500; }
-        #capture-btn { background: #4facfe; }
-
-        /* 생성된 이미지 결과창 */
-        #image-output {
-            margin-top: 20px;
-            display: none;
-            flex-direction: column;
             align-items: center;
-            border-top: 1px dashed #555;
-            padding-top: 20px;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
+            overflow: hidden;
         }
 
-        #image-output img {
-            width: 80%;
-            border: 2px solid #ffd700;
-            margin-top: 10px;
+        .slot-window {
+            font-size: 3.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            transition: 0.1s;
+            text-align: center;
+        }
+
+        .neon-eat { color: #ff0055; text-shadow: 0 0 20px #ff0055; }
+        .neon-stop { color: #00d4ff; text-shadow: 0 0 20px #00d4ff; }
+
+        .controls { margin-top: 50px; }
+        #lever-btn {
+            background: linear-gradient(to bottom, #d4af37, #b8860b);
+            border: none;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #000;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #7b5d09, 0 15px 20px rgba(0,0,0,0.5);
+            transition: 0.1s;
+            outline: none;
+        }
+
+        #lever-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #7b5d09, 0 8px 10px rgba(0,0,0,0.5);
+        }
+
+        .shake { animation: shake 0.1s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, -2px) rotate(-1deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+
+        #final-msg {
+            margin-top: 30px;
+            font-size: 1.1rem;
+            height: 3em;
+            color: #aaa;
+            text-align: center;
+            padding: 0 20px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <div id="capture-area">
-        <h1>✨ 응숙이의 먹거리 돌림판 ✨</h1>
-        <div class="roulette-container">
-            <div class="pin"></div>
-            <canvas id="canvas" width="300" height="300"></canvas>
-        </div>
-        <div id="result">오늘 뭐 먹지?</div>
+    <h1>✨ 먹보 돼숙이의 운명의 슬롯머신 ✨</h1>
+
+    <div class="slot-machine" id="machine">
+        <div class="slot-window" id="slot-text">? ? ?</div>
     </div>
 
-    <div class="btn-group">
-        <button id="spin-btn">돌리기!</button>
-        <button id="capture-btn">결과 이미지 만들기</button>
-    </div>
+    <div id="final-msg">고민될 땐 하늘에 맡기세요</div>
 
-    <div id="image-output">
-        <p>👇 이미지를 길게 눌러서 저장하세요!</p>
-        <div id="img-container"></div>
+    <div class="controls">
+        <button id="lever-btn">PUSH!</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const spinBtn = document.getElementById('spin-btn');
-        const captureBtn = document.getElementById('capture-btn');
-        const resultDiv = document.getElementById('result');
-        const outputDiv = document.getElementById('image-output');
-        const imgContainer = document.getElementById('img-container');
+        const slotText = document.getElementById('slot-text');
+        const leverBtn = document.getElementById('lever-btn');
+        const machine = document.getElementById('machine');
+        const finalMsg = document.getElementById('final-msg');
 
-        const menus = ["영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡", "영동족발", "작공짜떡"];
-        const colors = ["#8B0000", "#D4AF37", "#1a1a1a", "#B8860B", "#333333", "#A52A2A"];
-        let currentRotation = 0;
+        // 슬롯 도중 지나가는 문구들
+        const options = ["먹어라!", "참아라?", "당장먹어", "고민노노", "딱한입만", "한그릇더"];
+        
+        // 당첨 시 '먹어라' 전용 멘트들
+        const eatMessages = [
+            "😋 응숙이 돼지 아니에요~",
+            "💖 먹으며 더 예뻐져요!",
+            "🔥 맛있게 먹고 배두드리면 배꺼짐~!",
+            "✨ 작은공간 배공간 조금 차지해요~",
+            "🍗 이건 살 안 쪄요, 내가 먹어봄!"
+        ];
 
-        function draw() {
-            const arc = (Math.PI * 2) / 12;
-            menus.forEach((text, i) => {
-                ctx.beginPath();
-                ctx.fillStyle = colors[i % colors.length];
-                ctx.moveTo(150, 150);
-                ctx.arc(150, 150, 150, i * arc, (i + 1) * arc);
-                ctx.fill();
-                ctx.save();
-                ctx.translate(150, 150);
-                ctx.rotate(i * arc + arc / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = "white";
-                ctx.font = "bold 14px sans-serif";
-                ctx.fillText(text, 140, 5);
-                ctx.restore();
-            });
-        }
+        let isSpinning = false;
 
         function spin() {
-            spinBtn.disabled = true;
-            outputDiv.style.display = 'none'; // 새 회전 시 이전 이미지 숨김
-            const rotate = Math.floor(Math.random() * 360) + 2160;
-            currentRotation += rotate;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
+            if (isSpinning) return;
+            isSpinning = true;
             
-            setTimeout(() => {
-                spinBtn.disabled = false;
-                const index = Math.floor((360 - (currentRotation % 360) + 270) % 360 / 30);
-                resultDiv.innerHTML = `🎉 당첨: ${menus[index]}! 🎉`;
-            }, 4000);
+            machine.classList.add('shake');
+            finalMsg.innerText = "운명의 주사위가 굴러갑니다...";
+            leverBtn.disabled = true;
+
+            let count = 0;
+            const duration = 30; 
+            
+            const interval = setInterval(() => {
+                const randomText = options[Math.floor(Math.random() * options.length)];
+                slotText.innerText = randomText;
+                slotText.style.color = count % 2 === 0 ? "#fff" : "#ffd700";
+                
+                count++;
+                if (count > duration) {
+                    clearInterval(interval);
+                    stopSpin();
+                }
+            }, 70);
         }
 
-        // 이미지 생성 버튼 로직
-        function makeImage() {
-            html2canvas(document.getElementById('capture-area'), {
-                backgroundColor: "#000"
-            }).then(canvas => {
-                const img = new Image();
-                img.src = canvas.toDataURL("image/png");
-                imgContainer.innerHTML = '';
-                imgContainer.appendChild(img);
-                outputDiv.style.display = 'flex';
-                // 화면 아래로 스크롤
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            });
+        function stopSpin() {
+            machine.classList.remove('shake');
+            isSpinning = false;
+            leverBtn.disabled = false;
+
+            // 먹어라 확률을 약 90%로 설정 (0.1 이상이면 먹어라)
+            const finalDecision = Math.random() > 0.1 ? "먹어라!" : "참아라!";
+            slotText.innerText = finalDecision;
+
+            if (finalDecision === "먹어라!") {
+                slotText.className = "slot-window neon-eat";
+                // 먹어라 멘트 중 랜덤 선택
+                finalMsg.innerText = eatMessages[Math.floor(Math.random() * eatMessages.length)];
+                if (navigator.vibrate) navigator.vibrate(200);
+            } else {
+                slotText.className = "slot-window neon-stop";
+                finalMsg.innerText = "🧘 먹어라 나올 때까지 돌려보아요~\n(한 번 더 누르면 바뀔지도?)";
+                if (navigator.vibrate) navigator.vibrate(50);
+            }
         }
 
-        draw();
-        spinBtn.addEventListener('click', spin);
-        captureBtn.addEventListener('click', makeImage);
+        leverBtn.addEventListener('click', spin);
     </script>
 </body>
 </html>
